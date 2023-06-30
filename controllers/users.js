@@ -1,80 +1,82 @@
 const User = require("../models/user");
 
-//поиск всех пользователей
+// поиск всех пользователей
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send({ data: users }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === "SomeErrorName") {
         return res.status(400).send({
-          "message": "Переданы некорректные данные при создании пользователя.", 
+          message: "Переданы некорректные данные при создании пользователя.",
         });
       }
-      return res.status(500).send({ "message": "Произошла ошибка" });
+      return res.status(500).send({ message: "Произошла ошибка" });
     });
 };
 
-//поиск пользователя по id
+// поиск пользователя по id
 module.exports.getUserId = (req, res) => {
   User.findById(req.params.id)
-    .then((user) => res.status(200).send({ "name": user.name, "about": user.about, "avatar": user.avatar, "_id": user._id } ))
+    .then((user) => res.status(200).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      _id: user._id,
+    }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === "SomeErrorName") {
         return res.status(400).send({
-          "message": "Пользователь по указанному _id не найден. ", 
+          message: "Пользователь по указанному _id не найден. ",
         });
       }
-      return res.status(500).send({ "message": "Произошла ошибка" });
+      return res.status(500).send({ message: "Произошла ошибка" });
     });
 };
 
-//создание пользователя
+// создание пользователя
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  User
-    .create({ name, about, avatar })
-    .then(user => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({
-          "message": "Переданы некорректные данные при создании пользователя. ", 
-        });
-      }
-      return res.status(500).send({ "message": "Произошла ошибка" });
-    });
-};
-
-//обновление данных пользователя
-module.exports.updateUser = (req, res) => {
-  const { name, about } = req.body;
-
-  User
-    .findByIdAndUpdate(req.user._id, { name, about })
-    .then(user => res.status(200).send(user))
+  User.create({ name, about, avatar })
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({
-          "message": "Переданы некорректные данные при обновлении профиля."
-        })
+          message: "Переданы некорректные данные при создании пользователя. ",
+        });
       }
-      return res.status(500).send({ "message": "Произошла ошибка" });
+      return res.status(500).send({ message: "Произошла ошибка" });
     });
 };
 
-//обновление аватара
+// обновление данных пользователя
+module.exports.updateUser = (req, res) => {
+  const { name, about } = req.body;
+
+  User.findByIdAndUpdate(req.user._id, { name, about })
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res.status(400).send({
+          message: "Переданы некорректные данные при обновлении профиля.",
+        });
+      }
+      return res.status(500).send({ message: "Произошла ошибка" });
+    });
+};
+
+// обновление аватара
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
-  User
-    .findByIdAndUpdate(req.user._id, { avatar })
-    .then(user => res.status(200).send( user))
+  User.findByIdAndUpdate(req.user._id, { avatar })
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === "SomeErrorName") {
         return res.status(400).send({
-          "message": "Переданы некорректные данные при обновлении аватара.",
+          message: "Переданы некорректные данные при обновлении аватара.",
         });
       }
-      return res.status(500).send({ "message": "Произошла ошибка" });
+      return res.status(500).send({ message: "Произошла ошибка" });
     });
-}
+};

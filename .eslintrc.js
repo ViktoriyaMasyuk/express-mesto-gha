@@ -23,6 +23,6 @@ module.exports = {
   rules: {
     semi: ["error", "always"],
     quotes: ["error", "double"],
-    "no-underscore-dangle": ["error", { "allow": ["foo_", "_bar"] }],
+    "no-underscore-dangle": ["error", { allow: ["foo_", "_bar", "_id"] }],
   },
 };
