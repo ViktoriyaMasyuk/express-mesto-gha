@@ -5,7 +5,7 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send({ data: users }))
     .catch((err) => {
-      if (err.name === "SomeErrorName") {
+      if (err.name === "CastError") {
         return res.status(400).send({
           message: "Переданы некорректные данные при создании пользователя.",
         });
@@ -24,7 +24,7 @@ module.exports.getUserId = (req, res) => {
       _id: user._id,
     }))
     .catch((err) => {
-      if (err.name === "SomeErrorName") {
+      if (err.name === "CastError") {
         return res.status(400).send({
           message: "Пользователь по указанному _id не найден. ",
         });
@@ -72,7 +72,7 @@ module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { avatar })
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === "SomeErrorName") {
+      if (err.name === "ValidationError") {
         return res.status(400).send({
           message: "Переданы некорректные данные при обновлении аватара.",
         });
