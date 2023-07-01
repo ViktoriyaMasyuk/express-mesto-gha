@@ -29,3 +29,12 @@ app.listen(PORT, () => {
   console.log("Ссылка на сервер");
   console.log(BASE_PATH);
 });
+
+app.use((req, res, next) => {
+  res.status(404);
+  if (req.accepts("json")) {
+    res.json({ message: "Страница не найдена" });
+    return;
+  }
+  next();
+});
