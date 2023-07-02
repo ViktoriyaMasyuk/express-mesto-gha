@@ -3,7 +3,7 @@ const User = require("../models/user");
 // поиск всех пользователей
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send({ data: users }))
+    .then((users) => res.send({ data: users }))
     .catch((err) => {
       if (err.name === "CastError") {
         return res.status(400).send({
@@ -42,7 +42,7 @@ module.exports.createUser = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: "Пользователь с указанным _id не найден." });
       }
-      return res.send(user);
+      return res.status(201).send(user);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -82,6 +82,6 @@ module.exports.updateAvatar = (req, res) => {
           message: "Переданы некорректные данные при обновлении аватара.",
         });
       }
-      return res.status(500).send({ message: "Произошла ошибка" });
+      return res.status(500).send({ message: "Произошла ошибка" })
     });
 };

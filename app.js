@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const helmet = require("helmet");
 
 const { PORT = 3000, BASE_PATH } = process.env;
 const app = express();
@@ -25,10 +26,7 @@ app.use("/", require("./routes/users"));
 app.use("/", require("./routes/cards"));
 
 app.use(express.static(path.join(__dirname, "public")));
-app.listen(PORT, () => {
-  console.log("Ссылка на сервер");
-  console.log(BASE_PATH);
-});
+app.use(helmet());
 
 app.use((req, res, next) => {
   res.status(404);
@@ -37,4 +35,9 @@ app.use((req, res, next) => {
     return;
   }
   next();
+});
+
+app.listen(PORT, () => {
+  console.log("Ссылка на сервер");
+  console.log(BASE_PATH);
 });
