@@ -6,13 +6,16 @@ module.exports.getCards = (req, res) => {
     .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.id)
+    .orFail(() => res.status(404).send({ message: "Передан некорректный id карточки" }))
     .then((card) => {
-      if (!card) {
-        return res.status(404).send({ message: "Передан некорректный id карточки" });
+      if (card.owner.toString() === req.user._id) {
+        return Card.findByIdAndRemove(req.params.id)
+          .then(() => res.status(200).send(card))
+          .catch(next);
       }
-      return res.status(200).send(card);
+      return res.status(404).send({ message: "Нет доступа удалять карточки других пользователей." });
     })
     .catch((err) => {
       if (err.name === "CastError") {

@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
+const { createUser, login } = require("./controllers/users");
+const auth = require("./middlewares/auth");
 
 const { PORT = 3000, BASE_PATH } = process.env;
 const app = express();
@@ -15,13 +17,10 @@ mongoose.connect("mongodb://localhost:27017/mestodb", {
   useUnifiedTopology: true,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "649b298d5c9b16ef4eaa5b6d",
-  };
-  next();
-});
+app.post("/signin", login);
+app.post("/signup", createUser);
 
+app.use(auth);
 app.use("/", require("./routes/users"));
 app.use("/", require("./routes/cards"));
 
@@ -35,6 +34,10 @@ app.use((req, res, next) => {
     return;
   }
   next();
+});
+
+app.use((err, req, res, next) => {
+  res.send({ message: err.message });
 });
 
 app.listen(PORT, () => {

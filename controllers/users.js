@@ -1,4 +1,6 @@
+const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 // поиск всех пользователей
 module.exports.getUsers = (req, res) => {
@@ -35,9 +37,13 @@ module.exports.getUserId = (req, res) => {
 
 // создание пользователя
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: "Пользователь с указанным _id не найден." });
@@ -83,5 +89,44 @@ module.exports.updateAvatar = (req, res) => {
         });
       }
       return res.status(500).send({ message: "Произошла ошибка" });
+    });
+};
+
+// аутентификация пользователя
+// module.exports.login = (req, res) => {
+//   const { email, password } = req.body;
+
+//   User.findOne({ email })
+//     .then((user) => {
+//       if (!user) {
+//         return Promise.reject(new Error("Неправильные почта или пароль"));
+//       }
+//       return bcrypt.compare(password, user.password);
+//     })
+//     .then((matched) => {
+//       if (!matched) {
+//         return Promise.reject(new Error("Неправильные почта или пароль"));
+//       }
+//       return res.send({ message: "Всё верно!" });
+//     })
+//     .catch((err) => {
+//       res
+//         .status(401)
+//         .send({ message: err.message });
+//     });
+// };
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, "secret-key", { expiresIn: "7d" });
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
     });
 };
