@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
-const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 const BadRequest = require("../errors/BadRequestError");
 const Conflict = require("../errors/ConflictError");
 const NotFound = require("../errors/NotFoundError");
@@ -12,7 +12,7 @@ module.exports.getUsers = (req, res, next) => {
     .then((users) => res.send({ data: users }))
     .catch((err) => {
       if (err.name === "CastError") {
-        throw new BadRequest("Переданы некорректные данные при создании пользователя.")
+        throw new BadRequest("Переданы некорректные данные при создании пользователя.");
       }
       next(err);
     })
@@ -92,10 +92,10 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (user._id) {
-        const token = jwt.sign({ _id: user._id }, "secret-key", { expiresIn: "7d" });
-        res.send({ token });
-      }
+      const token = jwt.sign({ _id: user._id }, "secret-key", { expiresIn: "7d" });
+      res.send({ token });
+    })
+    .catch(() => {
       throw new UnauthorizedError("Введены неверные почта или пароль");
     })
     .catch(next);

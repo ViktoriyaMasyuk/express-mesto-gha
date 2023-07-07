@@ -29,8 +29,7 @@
     "eslint": "^8.43.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
-    "nodemon": "^2.0.22",
-    "validator": "^13.9.0"
+    "nodemon": "^2.0.22"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -40,6 +39,7 @@
     "helmet": "^7.0.0",
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.1",
-    "mongoose": "^7.3.1"
+    "mongoose": "^7.3.1",
+    "validator": "^13.9.0"
   }
 }
