@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
 const { createUser, login } = require("./controllers/users");
+const { validationLogin, validationCreateUser } = require("./middlewares/validation");
 const auth = require("./middlewares/auth");
 
 const { PORT = 3000, BASE_PATH } = process.env;
@@ -17,8 +18,8 @@ mongoose.connect("mongodb://localhost:27017/mestodb", {
   useUnifiedTopology: true,
 });
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post("/signin", validationLogin, login);
+app.post("/signup", validationCreateUser, createUser);
 
 app.use(auth);
 app.use("/", require("./routes/users"));
@@ -37,7 +38,8 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  res.send({ message: err.message });
+  res.status(500).send({ message: "На сервере произошла ошибка" });
+  next();
 });
 
 app.listen(PORT, () => {
