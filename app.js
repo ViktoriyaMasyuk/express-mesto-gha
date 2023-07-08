@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
+const { errors } = require('celebrate');
 const { createUser, login } = require("./controllers/users");
 const { validationLogin, validationCreateUser } = require("./middlewares/validation");
 const auth = require("./middlewares/auth");
@@ -13,10 +14,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect("mongodb://localhost:27017/mestodb", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+
 
 app.post("/signin", validationLogin, login);
 app.post("/signup", validationCreateUser, createUser);
@@ -36,6 +34,7 @@ app.use((req, res, next) => {
   }
   next();
 });
+app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res
@@ -46,6 +45,11 @@ app.use((err, req, res, next) => {
         : message,
     });
   next();
+});
+
+mongoose.connect("mongodb://localhost:27017/mestodb", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
 app.listen(PORT, () => {

@@ -42,16 +42,15 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .orFail(() => { throw new NotFound("Пользователь с указанным _id не найден."); })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(201).send({ _id: user._id, email: user.email }))
     .catch((err) => {
       if (err.name === "ValidationError") {
         throw new BadRequest("Переданы некорректные данные при создании пользователя. ");
-      } else if (err.code === 11000) {
-        throw new Conflict("Пользователь с таким email уже существует");
-      } else {
-        next(err);
       }
+      if (err.code === 11000) {
+        throw new Conflict("Пользователь с таким email уже существует");
+      }
+      next(err);
     })
     .catch(next);
 };
@@ -95,9 +94,8 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, "super-strong-secret", { expiresIn: "7d" });
       res.send({ token });
     })
-    .catch((err) => {
-      console.log(err);
-      throw new UnauthorizedError({ message: err.message });
+    .catch(() => {
+      throw new UnauthorizedError("Неверно указаны почта или пароль");
     })
     .catch(next);
 };
