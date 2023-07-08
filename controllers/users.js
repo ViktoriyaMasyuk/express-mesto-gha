@@ -92,11 +92,12 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, "secret-key", { expiresIn: "7d" });
+      const token = jwt.sign({ _id: user._id }, "super-strong-secret", { expiresIn: "7d" });
       res.send({ token });
     })
-    .catch(() => {
-      throw new UnauthorizedError("Введены неверные почта или пароль");
+    .catch((err) => {
+      console.log(err);
+      throw new UnauthorizedError({ message: err.message });
     })
     .catch(next);
 };
