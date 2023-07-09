@@ -40,13 +40,13 @@ module.exports.validationUpdateUser = celebrate({
 });
 
 module.exports.validationUserId = celebrate({
-  body: Joi.object().keys({
+  params: Joi.object().keys({
     id: Joi.string().required().hex().length(24),
   }),
 });
 
 module.exports.validationCardId = celebrate({
-  body: Joi.object().keys({
+  params: Joi.object().keys({
     id: Joi.string().hex().length(24),
   }),
 });
