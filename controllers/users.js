@@ -34,7 +34,6 @@ module.exports.getUserId = (req, res, next) => {
 };
 
 module.exports.getMe = (req, res, next) => {
-  console.log(req.user._id)
   User.findById(req.user._id)
     .orFail(() => { throw new NotFound("Пользователь с указанным _id не найден."); })
     .then((user) => res.status(200).send({ user }))
@@ -56,7 +55,12 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(201).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+    }))
     .catch((err) => {
       if (err.name === "ValidationError") {
         throw new BadRequest("Переданы некорректные данные при создании пользователя. ");

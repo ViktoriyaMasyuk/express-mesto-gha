@@ -31,3 +31,29 @@ module.exports.validationUpdateAvatar = celebrate({
     avatar: Joi.string().required().custom(validationUrl),
   }),
 });
+
+module.exports.validationUpdateUser = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  }),
+});
+
+module.exports.validationUserId = celebrate({
+  body: Joi.object().keys({
+    id: Joi.string().required().hex().length(24),
+  }),
+});
+
+module.exports.validationCardId = celebrate({
+  body: Joi.object().keys({
+    id: Joi.string().required().hex().length(24),
+  }),
+});
+
+module.exports.validationCreateCard = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().required().custom(validationUrl),
+  }),
+});
