@@ -33,6 +33,20 @@ module.exports.getUserId = (req, res, next) => {
     .catch(next);
 };
 
+module.exports.getMe = (req, res, next) => {
+  console.log(req.user._id)
+  User.findById(req.user._id)
+    .orFail(() => { throw new NotFound("Пользователь с указанным _id не найден."); })
+    .then((user) => res.status(200).send({ user }))
+    .catch((err) => {
+      if (err.name === "CastError") {
+        throw new BadRequest("Указан некоректный id. ");
+      }
+      next(err);
+    })
+    .catch(next);
+};
+
 // создание пользователя
 module.exports.createUser = (req, res, next) => {
   const {
@@ -42,7 +56,7 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(201).send({ _id: user._id, email: user.email }))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === "ValidationError") {
         throw new BadRequest("Переданы некорректные данные при создании пользователя. ");
