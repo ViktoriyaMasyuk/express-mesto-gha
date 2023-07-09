@@ -13,7 +13,7 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
     .orFail(() => { throw new NotFound("Передан некорректный id карточки"); })
     .then((card) => {
-      if (card.owner === req.user._id) {
+      if (card.owner.toJSON() === req.user._id) {
         return Card.findByIdAndRemove(req.params.id)
           .then(() => res.status(200).send(card))
           .catch(next);
@@ -50,14 +50,17 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
   )
     .orFail(() => {
-      throw new NotFound("Переданы некоректные данные для постановки лайка");
+      throw new NotFound("Не найдена карточка для постановки лайка");
     })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err.name === "CastError") {
         throw new BadRequest("Переданы некоректные данные для постановки лайка");
+      } else if (err.name === "NotFound") {
+        throw err;
+      } else {
+        next(err);
       }
-      next(err);
     })
     .catch(next);
 };
@@ -69,14 +72,17 @@ module.exports.dislikeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFound("Переданы некоректные данные для постановки лайка");
+      throw new NotFound("Не найдена карточка для удаления лайка");
     })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err.name === "CastError") {
-        throw new BadRequest("Переданы некоректные данные для постановки лайка");
+        throw new BadRequest("Переданы некоректные данные для удаления лайка");
+      } else if (err.name === "NotFound") {
+        throw err;
+      } else {
+        next(err);
       }
-      next(err);
     })
     .catch(next);
 };
