@@ -56,8 +56,6 @@ module.exports.likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некоректные данные для постановки лайка'));
-      } else if (err.name === 'NotFound') {
-        throw err;
       } else {
         next(err);
       }
@@ -77,8 +75,6 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некоректные данные для удаления лайка'));
-      } else if (err.name === 'NotFound') {
-        throw err;
       } else {
         next(err);
       }

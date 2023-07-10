@@ -12,10 +12,9 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(routes);
-
 app.use(helmet());
 
+app.use(routes);
 app.use(errors());
 app.use(serverError);
 
